@@ -1,0 +1,16 @@
+- Configure git
+  - Repository
+  - Permissions
+  - Branches
+  - CI/CD
+
+- Design doc
+  - Goals
+  - Features
+  - Functionality
+  - Architecture
+
+- Directory structure
+  - front/back/admin
+
+- Determine main objectives
