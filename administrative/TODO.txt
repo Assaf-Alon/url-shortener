@@ -44,4 +44,4 @@
     - Backend
     - Database
   - Configure volumes for containers
-  - 
+  - GitHub runner: build images on push
