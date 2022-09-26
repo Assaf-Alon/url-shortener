@@ -5,8 +5,8 @@
   - CI/CD
 
 - Design doc
-  - Goals
-  - Features
+  V Goals
+  V Features
   - Functionality
   - Architecture
 
@@ -14,3 +14,34 @@
   - front/back/admin
 
 - Determine main objectives
+
+
+
+- Frontend
+  - Create Vue project
+  - Create Page structure + router
+  - Divide design to conceptual components
+  -   Create DL (backend access utility file)
+  -   Code components
+
+- Backend
+  - Learn the basics of Flask
+  - TEMP: until DB is up, create pseudo selections so app can be tested
+  -   Create DL (Data layer - Db access)
+  -   Create BL (Business layer - interfaces into the DL)
+  -   Create route functions (Mostly calls to Business layer)
+
+- Database
+  - Learn the basics of PostgreSQL
+  - design DB ERD
+  ? Create Postgres instance
+  ? Create relevant tables
+  
+
+- Deployment
+  - Create docker images
+    - Frontend
+    - Backend
+    - Database
+  - Configure volumes for containers
+  - 
