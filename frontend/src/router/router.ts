@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/SignIn",
-    name: "SignIn",
+    name: "signIn",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/SignUp",
-    name: "SignUp",
+    name: "signUp",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -33,8 +33,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userID = store.getters.getUserId;
-  if (to.name != "SignIn" && userID === null) {
-    next("SignIn");
+  if (to.name === "home" && userID === null) {
+    next("signIn");
     return;
   }
 

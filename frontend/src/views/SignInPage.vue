@@ -1,10 +1,19 @@
 <template>
-  <GenericForm :fields="fields"></GenericForm>
+  <GenericForm :fields="fields" submit-btn-label="OK">
+    <template v-slot:actions>
+      <div>
+        <v-btn type="submit">Login</v-btn>
+        <v-btn @click="$router.push('signUp')">Sign Up</v-btn>
+      </div>
+      <v-btn>Login with google</v-btn>
+    </template>
+  </GenericForm>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapActions } from "vuex";
+import { RULES } from "@/utilities/consts";
 import GenericForm from "@/components/GenericForm.vue";
 
 export default defineComponent({
@@ -14,11 +23,15 @@ export default defineComponent({
       fields: [
         {
           name: "user",
-          label: "username",
+          label: "Username",
+          type: "text",
+          rules: [RULES.required],
         },
         {
-          name: "user",
-          label: "username",
+          name: "password",
+          label: "Password",
+          type: "password",
+          rules: [RULES.required],
         },
       ],
       userID: null,

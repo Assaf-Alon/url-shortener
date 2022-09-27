@@ -22,6 +22,7 @@ npm run serve
 # Useful links:
 https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities
 https://www.npmjs.com/package/@vue/cli
+https://www.npmjs.com/package/vue3-google-oauth2
 
 
 

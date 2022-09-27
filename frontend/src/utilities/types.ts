@@ -19,16 +19,24 @@ interface FormFieldInterface {
   name: string;
   label: string;
   rules?: RuleFunction[];
+  type?: string;
 }
 
 class FormField implements FormFieldInterface {
   name: string;
   label: string;
   rules?: RuleFunction[];
-  constructor(name: string, label: string, rules: RuleFunction[]) {
+  type?: string;
+  constructor(
+    name: string,
+    label: string,
+    rules?: RuleFunction[],
+    type?: string
+  ) {
     this.name = name;
     this.label = label;
     this.rules = rules;
+    this.type = type;
   }
 }
 
