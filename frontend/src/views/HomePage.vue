@@ -1,18 +1,32 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <SingleURL></SingleURL>
+  <NewURL></NewURL>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-
+import DL from "@/utilities/DL";
+import { URLResponse } from "@/utilities/types";
+import SingleURL from "@/components/SingleURL.vue";
+import NewURL from "@/components/NewURL.vue";
 export default defineComponent({
   name: "HomePage",
-  components: {
-    HelloWorld,
+  data() {
+    return {
+      urls: [] as URLResponse[],
+    };
   },
+  methods: {
+    async getURLS() {
+      let resp = await DL.getUserUrlTranslations();
+      console.log(resp);
+
+      return resp;
+    },
+  },
+  async created() {
+    this.urls = await this.getURLS();
+  },
+  components: { SingleURL, NewURL },
 });
 </script>

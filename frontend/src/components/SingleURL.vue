@@ -1,7 +1,10 @@
-<template></template>
+<template>
+  <EditURL></EditURL>
+</template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import EditURL from "@/components/EditURL.vue";
 
 export default defineComponent({
   name: "SingleURL",
@@ -9,6 +12,8 @@ export default defineComponent({
     return {};
   },
   methods: {},
-  components: {},
+  components: {
+    EditURL,
+  },
 });
 </script>

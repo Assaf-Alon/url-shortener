@@ -1,7 +1,8 @@
 import { createStore } from "vuex";
+import { userID } from "@/utilities/types";
 
 export interface MyStore {
-  userID: string | null;
+  userID: userID;
 }
 
 export default createStore({
