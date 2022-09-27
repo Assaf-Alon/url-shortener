@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <v-text-field v-for="field in fields" :key="field.name"> </v-text-field>
+</template>
 
 <script lang="ts">
 import { defineComponent } from "vue";

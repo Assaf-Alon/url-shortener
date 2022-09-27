@@ -1,5 +1,5 @@
 <template>
-  <GenericForm></GenericForm>
+  <GenericForm :fields="fields"></GenericForm>
 </template>
 
 <script lang="ts">
@@ -11,6 +11,16 @@ export default defineComponent({
   name: "SignInPage",
   data() {
     return {
+      fields: [
+        {
+          name: "user",
+          label: "username",
+        },
+        {
+          name: "user",
+          label: "username",
+        },
+      ],
       userID: null,
     };
   },

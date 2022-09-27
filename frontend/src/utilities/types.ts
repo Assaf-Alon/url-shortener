@@ -18,13 +18,13 @@ interface RuleFunction {
 interface FormFieldInterface {
   name: string;
   label: string;
-  rules: RuleFunction[];
+  rules?: RuleFunction[];
 }
 
 class FormField implements FormFieldInterface {
   name: string;
   label: string;
-  rules: RuleFunction[];
+  rules?: RuleFunction[];
   constructor(name: string, label: string, rules: RuleFunction[]) {
     this.name = name;
     this.label = label;
