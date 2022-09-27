@@ -1,25 +1,26 @@
 <template>
-  <label for="input">username: </label>
-  <input id="input" v-model="userID" />
-  <button
-    type="submit"
-    @click="
-      setUserId(userID);
-      $router.push('/');
-    "
-  >
-    ok
-  </button>
+  <GenericForm :fields="fields"></GenericForm>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapActions } from "vuex";
+import GenericForm from "@/components/GenericForm.vue";
 
 export default defineComponent({
   name: "SignInPage",
   data() {
     return {
+      fields: [
+        {
+          name: "user",
+          label: "username",
+        },
+        {
+          name: "user",
+          label: "username",
+        },
+      ],
       userID: null,
     };
   },
@@ -27,7 +28,7 @@ export default defineComponent({
     ...mapActions(["setUserId"]),
   },
   components: {
-    // HelloWorld,
+    GenericForm,
   },
 });
 </script>

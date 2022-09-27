@@ -1,15 +1,19 @@
 <template>
-  <GenericForm></GenericForm>
+  <EditURL></EditURL>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import GenericForm from "@/components/GenericForm.vue";
+import EditURL from "@/components/EditURL.vue";
 
 export default defineComponent({
-  name: "SignUpPage",
+  name: "SingleURL",
+  data() {
+    return {};
+  },
+  methods: {},
   components: {
-    GenericForm,
+    EditURL,
   },
 });
 </script>
