@@ -45,24 +45,25 @@ def clear_db():
         print("No DB found...", end='')
     print(colored("[OK]", "green"))
 
-def test_put_url_translations1():
-    print("Initializing DB...")
+def test_post_url_translations1():
+    print("Initializing DB...", end='')
     
     for dat in data:
-        res = requests.put(test_utils.BASE + "translate/" + dat['short_url'], dat)
+        res = requests.post(test_utils.BASE + "translate/" + dat['short_url'], dat)
         assert res.status_code == 201
         
     print(colored("[OK]", "green"))
 
 def run_app():
+    print("Running app...")
     global app_process
     app_process = subprocess.Popen(["python", "./app.py"], shell=True)
-    sleep(1)
+    sleep(2.5)
     print(colored("[OK]", "green"))
 
 
 def test_get_url_translations1():
-    print("Testing GET on added records")
+    print("Testing GET on added records", end='')
     for dat in data:
         short_url = dat['short_url']
         long_url = dat['long_url']
@@ -71,18 +72,41 @@ def test_get_url_translations1():
     print(colored("[OK]", "green"))
     
 def test_get_url_translations2():
-    print("Testing GET on record not added")
+    print("Testing GET on record not added", end='')
     test_utils.assert_get_request("not_added", status_code=404)
     print(colored("[OK]", "green"))
     
+
+def test_delete_url_translations1():
+    print("Testing DELETE", end='')
+    test_utils.assert_get_request(data[1]['short_url'], data[1]['long_url'], data[1]['user_id'])
+    res = requests.delete(test_utils.BASE + "translate/" + data[1]['short_url'])
+    assert res.status_code == 204
+    sleep(0.2)
+    test_utils.assert_get_request(short_url=data[1]['short_url'], status_code=404)
+    print(colored("[OK]", "green"))
     
     
+# res = requests.get(test_utils.BASE + "translate/1")
+# res = requests.delete(test_utils.BASE + "translate/1")
+# res = requests.get(test_utils.BASE + "translate/1")
+
+
+# user_dict = {"user_id": "nadav",
+#              "password": "nadav1",
+#              "email": "nadav@mail.com"}
+# res = requests.get(test_utils.BASE + "user/nadav", user_dict)
+
+# res = requests.post(test_utils.BASE + "user/nadav", user_dict)
+
+
 
 if __name__ == "__main__":
     clear_db()
     run_app()
-    sleep(0.4)
-    test_put_url_translations1()
+    sleep(0.2)
+    test_post_url_translations1()
     test_get_url_translations1()
     test_get_url_translations2()
+    test_delete_url_translations1()
     os.kill(app_process.pid, signal.CTRL_C_EVENT) # WORKS ON WINDOWS ONLY [PROBABLY]!!!

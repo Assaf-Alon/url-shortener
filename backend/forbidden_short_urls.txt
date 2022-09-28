@@ -1,0 +1,9 @@
+admin
+translate
+get_user_urls
+user
+signup
+signin
+home
+about
+maybe_do_something_in_regex
