@@ -1,9 +1,14 @@
+# import unittest
 import requests
+import os
+from termcolor import colored
+import subprocess
+from time import sleep
+import signal
+import test_utils
 
-BASE = "http://127.0.0.1:5000/"
-
-def init_db():
-    data = [
+app_process = None
+data = [
         {"short_url": "rick", "long_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"},
         {"short_url": "admin_rick", "long_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "user_id": "nadav"},
         {"short_url": "flask", "long_url": "https://www.youtube.com/watch?v=GMppyAPbLYk", "user_id": "assaf"},
@@ -26,17 +31,58 @@ def init_db():
         {"short_url": "24", "long_url": "https://www.google.com/photos", "user_id": "user4"},
     ]
 
-    for dat in data:
-        res = requests.put(BASE + "translate/" + dat['short_url'], dat)
-        print(res.json())
+def clear_db():
+    print("Clearing Database...", end='')
+    if os.path.exists("./database.db"):
+        try:
+            os.remove("./database.db")
+            print("Removed DB...", end='')
+        except:
+            print(colored("Failed to clear DB", "red"))
+            print("Try to see if there're any python processes running")
+            exit()
+    else:
+        print("No DB found...", end='')
+    print(colored("[OK]", "green"))
 
-
-init_db()
-print()
-
-for i in range(21,25):
-    res = requests.get(BASE + "translate/" + str(i))
-    print(res.json())
+def init_db():
+    print("Initializing DB...")
     
-    res = requests.delete(BASE + "translate/" + str(i))
-    print(res)
+    for dat in data:
+        res = requests.put(test_utils.BASE + "translate/" + dat['short_url'], dat)
+        assert res.status_code == 201
+        
+    print(colored("[OK]", "green"))
+
+def run_app():
+    global app_process
+    app_process = subprocess.Popen(["python", "./app.py"], shell=True)
+    sleep(1)
+    print(colored("[OK]", "green"))
+
+
+def test_get_url_translations1():
+    print("Testing GET on added records")
+    for dat in data:
+        short_url = dat['short_url']
+        long_url = dat['long_url']
+        user_id  = dat['user_id'] if 'user_id' in dat.keys() else "anonymous"
+        test_utils.assert_get_request(short_url, long_url, user_id)
+    print(colored("[OK]", "green"))
+    
+def test_get_url_translations2():
+    print("Testing GET on record not added")
+    test_utils.assert_get_request("not_added", status_code=404)
+    print(colored("[OK]", "green"))
+    
+    
+    
+
+if __name__ == "__main__":
+    clear_db()
+    run_app()
+    sleep(0.4)
+    init_db()
+    test_get_url_translations1()
+    test_get_url_translations2()
+    os.kill(app_process.pid, signal.CTRL_C_EVENT) # WORKS ON WINDOWS ONLY [PROBABLY]!!!

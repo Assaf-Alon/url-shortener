@@ -1,4 +1,7 @@
+import unittest
+import app
 import requests
+
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -31,12 +34,8 @@ def init_db():
         print(res.json())
 
 
-init_db()
-print()
+class TestMain(unittest.TestCase):
+    def test_get_url_translations1(self):
+        
 
-for i in range(21,25):
-    res = requests.get(BASE + "translate/" + str(i))
-    print(res.json())
-    
-    res = requests.delete(BASE + "translate/" + str(i))
-    print(res)
+

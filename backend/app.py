@@ -49,14 +49,6 @@ translation_put_args.add_argument("long_url", type=str, help="The long url is re
 translation_put_args.add_argument("user_id", type=str, help="The id of the user")
 
 
-# For the marshall
-# translation_resource_fields = {
-#     'short_url': fields.String,
-#     'long_url': fields.String,
-#     'user_id': fields.String,
-# }
-
-
 # REST API methods for the translate page
 # {BASE_DOMAIN}/translate/<string:short_url>"
 class UrlTranslations(Resource):
@@ -69,7 +61,8 @@ class UrlTranslations(Resource):
             listify = [dict(row) for row in output]
             
             if (len(listify) == 0):
-                output = jsonify({short_url: {"short_url": short_url, "long_url": f"ERROR - {short_url} not found", "user_id": "ERROR"}})
+                # output = jsonify({short_url: {"short_url": short_url, "long_url": f"ERROR - {short_url} not found", "user_id": "ERROR"}})
+                abort(404)
             else:
                 dictify = {short_url: listify[0]}
                 output = jsonify(dictify)
