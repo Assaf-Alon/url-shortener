@@ -6,6 +6,7 @@
   >
     <v-text-field
       v-for="field in fields"
+      :data-test="field.name"
       v-model="fieldValues[field.name]"
       :label="field.label"
       :key="field.name"
@@ -33,6 +34,7 @@ export default defineComponent({
       type: Array as () => Array<FormField>,
     },
   },
+  emits: ["submitted"],
   data() {
     return {
       valid: null,
@@ -40,7 +42,7 @@ export default defineComponent({
         [k: string]: boolean;
       },
       fieldValues: {} as {
-        [k: string]: any;
+        [k: string]: string | null;
       },
     };
   },

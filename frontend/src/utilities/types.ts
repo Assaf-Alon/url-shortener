@@ -40,4 +40,4 @@ class FormField implements FormFieldInterface {
   }
 }
 
-export { urlTranslation, userID, URLResponse, FormField };
+export { urlTranslation, userID, URLResponse, FormField, RuleFunction };

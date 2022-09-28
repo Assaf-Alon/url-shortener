@@ -1,13 +1,19 @@
 <template>
-  <GenericForm :fields="fields" submit-btn-label="OK">
-    <template v-slot:actions>
-      <div>
-        <v-btn type="submit">Login</v-btn>
-        <v-btn @click="$router.push('signUp')">Sign Up</v-btn>
-      </div>
-      <v-btn>Login with google</v-btn>
-    </template>
-  </GenericForm>
+  <div class="d-flex flex-column">
+    <v-spacer />
+    <h1>ABC URL Shortener</h1>
+    <GenericForm :fields="fields" @submitted="loginAttempt">
+      <template v-slot:actions>
+        <div>
+          <v-btn type="submit">Login</v-btn>
+          <v-btn @click="$router.push('signUp')">Sign Up</v-btn>
+        </div>
+        <v-btn>Login with google</v-btn>
+      </template>
+    </GenericForm>
+    <v-spacer />
+    <v-spacer />
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,7 +28,7 @@ export default defineComponent({
     return {
       fields: [
         {
-          name: "user",
+          name: "username",
           label: "Username",
           type: "text",
           rules: [RULES.required],
@@ -39,6 +45,10 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(["setUserId"]),
+    loginAttempt(loginInfo: { username: string; password: string }) {
+      this.setUserId(loginInfo.username);
+      this.$router.push("/");
+    },
   },
   components: {
     GenericForm,
