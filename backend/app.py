@@ -6,6 +6,7 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 # import sqlalchemy
 from sqlalchemy import Table, Column, String, Boolean, MetaData, create_engine
 from sqlalchemy.sql import select
+from sqlalchemy import exc
 from os.path import exists
 
 # Config
@@ -13,30 +14,10 @@ app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Location of DB
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app)
 BASE_DOMAIN = "http://abc.sh/"
+URL_TABLE   = "url_tbl"
 
-
-
-# # Models
-# class UrlModel(db.Model):
-#     short_url = db.Column(db.String, primary_key=True)
-#     long_url  = db.Column(db.String, nullable=False)
-#     user_id   = db.Column(db.String) # empty if anonymous
-    
-#     def __repr__(self):
-#         return f"short_url = {short_url}, long_url = {long_url}, user_id = {user_id}"
-    
-
-# class UserModel(db.Model):
-#     user_id  = db.Column(db.String, primary_key=True)
-#     email    = db.Column(db.String, unique=True)
-#     password = db.Column(db.String)
-#     is_admin = db.Column(db.Boolean)
-    
-#     def __repr__(self):
-#         return f"user_id = {user_id}, email = {email}{', admin' if is_admin else ''} "
-
+# Database related operations
 metadata1 = MetaData()
 users = Table('user_tbl', metadata1,
   Column('user_id', String, primary_key=True),
@@ -46,7 +27,7 @@ users = Table('user_tbl', metadata1,
 )
 
 metadata2 = MetaData()
-urls = Table('url_tbl', metadata2,
+urls = Table(URL_TABLE, metadata2,
   Column('short_url', String, primary_key=True),
   Column('long_url', String),
   Column('user_id', String),
@@ -69,76 +50,71 @@ translation_put_args.add_argument("user_id", type=str, help="The id of the user"
 
 
 # For the marshall
-translation_resource_fields = {
-    'short_url': fields.String,
-    'long_url': fields.String,
-    'user_id': fields.String,
-}
+# translation_resource_fields = {
+#     'short_url': fields.String,
+#     'long_url': fields.String,
+#     'user_id': fields.String,
+# }
 
-# def abort_if_translation_doesnt_exist(short_url):
-#     if short_url not in translations.keys():
-#         abort(404, message=f"URL {BASE_DOMAIN}{short_url} doesn't exist")
-        
-        
-# def abort_if_translation_exists(short_url):
-#     if short_url in translations.keys():
-#         abort(409, message=f"URL {BASE_DOMAIN}{short_url} already exists")
-    
-    
+
+# REST API methods for the translate page
+# {BASE_DOMAIN}/translate/<string:short_url>"
 class UrlTranslations(Resource):
-    @marshal_with(translation_resource_fields) # Serialize it to json format 
+    # @marshal_with(translation_resource_fields) # Serialize it to json format 
     def get(self, short_url):
-        res = UrlModel.query.get(short_url=short_url)
-        return res
+        output = None
+        
+        with engine.connect() as con:
+            output = con.execute(f"SELECT * FROM {URL_TABLE} WHERE short_url = \"{short_url}\";")
+            listify = [dict(row) for row in output]
+            
+            if (len(listify) == 0):
+                output = jsonify({short_url: {"short_url": short_url, "long_url": f"ERROR - {short_url} not found", "user_id": "ERROR"}})
+            else:
+                dictify = {short_url: listify[0]}
+                output = jsonify(dictify)
+            
+        return output
+    
 
-    @marshal_with(translation_resource_fields)
     def put(self, short_url):
         args = translation_put_args.parse_args()
         user_id  = args["user_id"] if args["user_id"] != None else "anonymous"
         long_url = args["long_url"]
         
-        # validate input
+        dictify = {short_url: {"short_url": short_url,
+                                "long_url":  long_url,
+                                "user_id":  user_id}}
+        
+        # TODO - validate input
         
         with engine.connect() as con:
-
-            output = con.execute(f"INSERT INTO url_tbl (short_url, long_url, user_id) VALUES (\"{short_url}\", \"{long_url}\", \"{user_id}\");")
-        
-        return output, 201 # TODO - FIX
+            try:
+                con.execute(f"INSERT INTO {URL_TABLE} (short_url, long_url, user_id) VALUES (\"{short_url}\", \"{long_url}\", \"{user_id}\");")
+                
+            except exc.IntegrityError:
+                dictify[short_url]['long_url'] = f"ERROR - {short_url} already exists"
+                dictify[short_url]['user_id']  = "ERROR"
+                return dictify, 409
+                    
+        return dictify, 201 # TODO - Verify it actually worked
     
-    @marshal_with(translation_resource_fields)
     def delete(self, short_url):
-        abort_if_translation_doesnt_exist(short_url)
-        del translations[short_url]
+        with engine.connect() as con:
+            con.execute(f"DELETE FROM {URL_TABLE} WHERE short_url = \"{short_url}\";")
         return '', 204
 
 
 
 class GetUserURLs(Resource):
-    # @marshal_with(translation_resource_fields) # Serialize it to json format 
     def get(self, user_id):
         
         output = None
         with engine.connect() as con:
 
-            output = con.execute(f"SELECT * FROM url_tbl WHERE user_id = \"{user_id}\";")
+            output = con.execute(f"SELECT * FROM {URL_TABLE} WHERE user_id = \"{user_id}\";")
             output = jsonify({'output': [dict(row) for row in output]})
         return output
-        # print()
-        # print()
-        # print()
-        # print()
-        # print(output.first)
-        # print(dir(output))
-        # return 1
-        # return jsonify({[dict(row) for row in output]})
-        
-        
-        
-        print(result)
-        print()
-        print()
-        print()
-        return result
 
                 
 
