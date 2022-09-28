@@ -16,18 +16,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Location of DB
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 BASE_DOMAIN = "http://abc.sh/"
 URL_TABLE   = "url_tbl"
+USER_TABLE  = "user_tbl"
 
 # Database related operations
-metadata1 = MetaData()
-users = Table('user_tbl', metadata1,
+user_metadata = MetaData()
+users = Table(USER_TABLE, user_metadata,
   Column('user_id', String, primary_key=True),
   Column('email', String, unique=True),
   Column('password', String),
   Column('is_admin', Boolean),
 )
 
-metadata2 = MetaData()
-urls = Table(URL_TABLE, metadata2,
+url_metadata = MetaData()
+urls = Table(URL_TABLE, url_metadata,
   Column('short_url', String, primary_key=True),
   Column('long_url', String),
   Column('user_id', String),
@@ -36,10 +37,8 @@ urls = Table(URL_TABLE, metadata2,
 engine = create_engine('sqlite:///database.db')
 
 if not exists("./database.db"):
-    metadata1.create_all(engine)
-    metadata2.create_all(engine)
-
-conn = engine.connect()
+    user_metadata.create_all(engine)
+    url_metadata.create_all(engine)
 
 
 # Arguments expected to get from PUT requests
@@ -61,7 +60,6 @@ class UrlTranslations(Resource):
             listify = [dict(row) for row in output]
             
             if (len(listify) == 0):
-                # output = jsonify({short_url: {"short_url": short_url, "long_url": f"ERROR - {short_url} not found", "user_id": "ERROR"}})
                 abort(404)
             else:
                 dictify = {short_url: listify[0]}
@@ -94,6 +92,7 @@ class UrlTranslations(Resource):
     
     def delete(self, short_url):
         with engine.connect() as con:
+            # TODO - Check it's deleted
             con.execute(f"DELETE FROM {URL_TABLE} WHERE short_url = \"{short_url}\";")
         return '', 204
 

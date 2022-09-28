@@ -45,7 +45,7 @@ def clear_db():
         print("No DB found...", end='')
     print(colored("[OK]", "green"))
 
-def init_db():
+def test_put_url_translations1():
     print("Initializing DB...")
     
     for dat in data:
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     clear_db()
     run_app()
     sleep(0.4)
-    init_db()
+    test_put_url_translations1()
     test_get_url_translations1()
     test_get_url_translations2()
     os.kill(app_process.pid, signal.CTRL_C_EVENT) # WORKS ON WINDOWS ONLY [PROBABLY]!!!
