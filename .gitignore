@@ -5,4 +5,5 @@ administrative/~*
 frontend/**/node_modules/**
 
 # Backend
-# NULL
+backend/database.db
+backend/*/*__pycache__
