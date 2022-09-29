@@ -32,21 +32,21 @@ data = [
     ]
 
 def clear_db():
-    print("Clearing Database...", end='')
+    print("Clearing Database... ", end='')
     if os.path.exists("./database.db"):
         try:
             os.remove("./database.db")
             print("Removed DB...", end='')
         except:
-            print(colored("Failed to clear DB", "red"))
+            print(colored("Failed to clear DB ", "red"))
             print("Try to see if there're any python processes running")
             exit()
     else:
-        print("No DB found...", end='')
+        print("No DB found... ", end='')
     print(colored("[OK]", "green"))
 
 def test_post_url_translations1():
-    print("Initializing DB...", end='')
+    print("Initializing DB... ", end='')
     
     for dat in data:
         res = requests.post(test_utils.BASE + "translate/" + dat['short_url'], dat)
@@ -55,7 +55,7 @@ def test_post_url_translations1():
     print(colored("[OK]", "green"))
 
 def run_app():
-    print("Running app...")
+    print("Running app... ")
     global app_process
     app_process = subprocess.Popen(["python", "./app.py"], shell=True)
     sleep(2.5)
@@ -63,7 +63,7 @@ def run_app():
 
 
 def test_get_url_translations1():
-    print("Testing GET on added records", end='')
+    print("Testing GET on added records... ", end='')
     for dat in data:
         short_url = dat['short_url']
         long_url = dat['long_url']
@@ -72,13 +72,13 @@ def test_get_url_translations1():
     print(colored("[OK]", "green"))
     
 def test_get_url_translations2():
-    print("Testing GET on record not added", end='')
+    print("Testing GET on record not added... ", end='')
     test_utils.assert_get_request("not_added", status_code=404)
     print(colored("[OK]", "green"))
     
 
 def test_delete_url_translations1():
-    print("Testing DELETE", end='')
+    print("Testing DELETE... ", end='')
     test_utils.assert_get_request(data[1]['short_url'], data[1]['long_url'], data[1]['user_id'])
     res = requests.delete(test_utils.BASE + "translate/" + data[1]['short_url'])
     assert res.status_code == 204
@@ -100,6 +100,7 @@ def test_delete_url_translations1():
 # res = requests.post(test_utils.BASE + "user/nadav", user_dict)
 
 
+engine = None
 
 if __name__ == "__main__":
     clear_db()
