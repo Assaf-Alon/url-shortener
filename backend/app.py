@@ -26,12 +26,6 @@ BASE_DOMAIN = "http://abc.sh/"
 
 
 
-
-
-
-
-
-
 class GetUserURLs(Resource):
     def get(self, user_id):
         
@@ -39,7 +33,7 @@ class GetUserURLs(Resource):
         with engine.connect() as con:
 
             output = con.execute(f"SELECT * FROM {URL_TABLE} WHERE user_id = \"{user_id}\";")
-            output = jsonify({'output': [dict(row) for row in output]})
+            output = jsonify([dict(row) for row in output])
         return output
 
                 
