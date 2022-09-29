@@ -21,7 +21,8 @@ class User(Resource):
         engine = create_engine('sqlite:///database.db')
         args = user_args.parse_args()
         if "user_id" not in args.keys():
-            return jsonify({"message": "Anonymous login permitted"})
+            return jsonify({"message": "Anonymous login permitted",
+                            "success": True})
         
         
         output = None
@@ -30,12 +31,15 @@ class User(Resource):
             output = con.execute(f"SELECT * FROM {USER_TABLE} WHERE user_id = \"{args['user_id']}\";")
             output = [dict(row) for row in output]
             if (len(output) == 0):
-                return {"message": "username not found"}, 404
+                return {"message": "username not found",
+                        "success": False}, 404
             output = output[0]
             if args['password'] == output['password']:
-                return {"message": f"{args['user_id']} login permitted"}, 200
+                return {"message": f"{args['user_id']} login permitted",
+                        "success": True}, 200
             
-            return {"message": "Invalid password"}, 403
+            return {"message": "Invalid password",
+                    "success": False}, 403
         #     output = jsonify(output)
         # return output
         
