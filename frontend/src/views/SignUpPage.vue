@@ -18,6 +18,7 @@ import { defineComponent } from "vue";
 import { mapActions } from "vuex";
 import { RULES } from "@/utilities/consts";
 import { RuleFunction } from "@/utilities/types";
+import DL from "@/utilities/DL";
 import GenericForm from "@/components/GenericForm.vue";
 
 export default defineComponent({
@@ -55,8 +56,22 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(["setUserId"]),
-    signupAttempt(loginInfo: { username: string; password: string }) {
-      console.log(loginInfo.username);
+    async signupAttempt(signupInfo: {
+      username: string;
+      password: string;
+      email: string;
+    }) {
+      let signupResponse = await DL.createUser(
+        signupInfo.username,
+        signupInfo.password,
+        signupInfo.email
+      );
+      console.log(signupInfo);
+      console.log(signupResponse);
+      if (signupResponse !== true) {
+        // TODO: better notif
+        alert(signupResponse);
+      }
       this.$router.push("SignIn");
     },
     confirmPasswordRule(v: string): boolean | string {

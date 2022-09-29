@@ -15,20 +15,56 @@ export async function getUserUrlTranslations(): Promise<URLResponse[]> {
   } catch (err) {
     debugger;
     console.log(err);
+    return [];
   }
-  //   return await fetch(BASE_URL + "/get_user_urls/" + store.getters.getUserId);
-  return [
-    {
-      short_url: "abc.sh/asd",
-      long_url: "www.youtube.com",
-      user_id: store.getters.getUserId,
-    },
-    {
-      short_url: "abc.sh/asdb",
-      long_url: "www.reddit.com",
-      user_id: store.getters.getUserId,
-    },
-  ];
 }
 
-export default { getUserUrlTranslations };
+export async function loginAttempt(
+  user_id: string,
+  password: string
+): Promise<boolean | string> {
+  try {
+    const response = await axios.get(BASE_URL + "/user/" + user_id, {
+      params: {
+        user_id: user_id,
+        password: password,
+      },
+    });
+    console.log(response);
+
+    return response.data.success ? true : response.data.message;
+  } catch (err) {
+    console.log(err);
+    if (typeof err === "object" && err !== null) {
+      const message = (err as { response: { data: { message: string } } })
+        .response.data.message;
+      return message;
+    }
+    return false;
+  }
+}
+
+export async function createUser(
+  user_id: string,
+  password: string,
+  email: string
+): Promise<boolean | string> {
+  try {
+    const response = await axios.post(BASE_URL + "/user/" + user_id, {
+      user_id,
+      password,
+      email,
+    });
+    console.log(response);
+
+    return response.status === 201 ? true : response.data.message;
+  } catch (err) {
+    console.log(err);
+    if (typeof err === "object" && err !== null) {
+      const message = (err as { message: string }).message;
+      return message;
+    }
+    return false;
+  }
+}
+export default { getUserUrlTranslations, loginAttempt, createUser };

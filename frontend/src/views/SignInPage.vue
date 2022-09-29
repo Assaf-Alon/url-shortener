@@ -1,6 +1,5 @@
 <template>
   <div class="d-flex flex-column">
-    response is: {{ response }}
     <v-spacer />
     <h1>ABC URL Shortener</h1>
     <GenericForm :fields="fields" @submitted="loginAttempt">
@@ -48,9 +47,18 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(["setUserId"]),
-    loginAttempt(loginInfo: { username: string; password: string }) {
-      this.setUserId(loginInfo.username);
-      this.$router.push("/");
+    async loginAttempt(loginInfo: { username: string; password: string }) {
+      let loginResponse = await DL.loginAttempt(
+        loginInfo.username,
+        loginInfo.password
+      );
+      if (loginResponse === true) {
+        this.setUserId(loginInfo.username);
+        this.$router.push("/");
+      } else {
+        // TODO: create better error notif
+        alert(loginResponse);
+      }
     },
   },
   async created() {
