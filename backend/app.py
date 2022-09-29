@@ -1,6 +1,7 @@
 # Imports
 from sqlite3 import IntegrityError
 from flask import Flask, jsonify
+from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 # from flask_sqlalchemy import SQLAlchemy, Table, Column
 
@@ -17,6 +18,7 @@ from url_translation import URL_TABLE, UrlTranslations
 
 # Config
 app = Flask(__name__)
+cors = CORS(app, origins=['http://localhost:8080'])
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Location of DB
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
