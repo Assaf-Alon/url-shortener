@@ -1,0 +1,5 @@
+# DB Manager
+sqlite3 database.db
+.tables # View tables
+SELECT * FROM user_tbl;
+SELECT * FROM url_tbl;
