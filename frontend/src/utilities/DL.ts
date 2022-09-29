@@ -1,9 +1,21 @@
 import store from "@/store";
 import { URLResponse } from "@/utilities/types";
+import axios from "axios";
 
 const BASE_URL = "http://localhost:5000/";
 
 export async function getUserUrlTranslations(): Promise<URLResponse[]> {
+  try {
+    const response = await axios.get(
+      BASE_URL + "/get_user_urls/" + store.getters.getUserId
+    );
+    console.log(response);
+
+    return response.data;
+  } catch (err) {
+    debugger;
+    console.log(err);
+  }
   //   return await fetch(BASE_URL + "/get_user_urls/" + store.getters.getUserId);
   return [
     {
