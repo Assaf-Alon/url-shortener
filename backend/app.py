@@ -31,6 +31,7 @@ BASE_DOMAIN = "http://abc.sh/"
 class GetUserURLs(Resource):
     def get(self, user_id):
         
+        engine = create_engine('sqlite:///database.db')
         output = None
         with engine.connect() as con:
 
