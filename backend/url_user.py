@@ -9,6 +9,7 @@ from sqlalchemy import exc, create_engine
 import app_utils
 
 USER_TABLE  = "user_tbl"
+VERBOSE = False
 
 user_args = reqparse.RequestParser()
 user_args.add_argument("user_id",  type=str, help="The username")
@@ -18,25 +19,35 @@ user_args.add_argument("email",    type=str, help="The user's email address")
 # REST API methods for the user page
 class User(Resource):
     def get(self, user_id):
-        engine = create_engine('sqlite:///database.db')
         args = user_args.parse_args()
-        if "user_id" not in args.keys():
+        engine = create_engine('sqlite:///database.db')
+        if "user_id" == "Anonymous":
             return jsonify({"message": "Anonymous login permitted",
                             "success": True})
         
-        
         output = None
         with engine.connect() as con:
-
-            output = con.execute(f"SELECT * FROM {USER_TABLE} WHERE user_id = \"{args['user_id']}\";")
+            sql_query = f"SELECT * FROM {USER_TABLE} WHERE user_id = \"{user_id}\";"
+            output = con.execute(sql_query)
             output = [dict(row) for row in output]
+            if VERBOSE:
+                print(f"[VERBOSE] Ran SQL query: {sql_query}")
+                print(f"[VERBOSE] SQL query output: {output}")
             if (len(output) == 0):
                 return {"message": "username not found",
                         "success": False}, 404
+            
+            
             output = output[0]
             if args['password'] == output['password']:
-                return {"message": f"{args['user_id']} login permitted",
+                return {"message": f"{user_id} login permitted",
                         "success": True}, 200
+            
+            
+            if args['password'] == None:
+                return {"message": "Password not specified",
+                                "success": False}, 403
+            
             
             return {"message": "Invalid password",
                     "success": False}, 403
@@ -64,4 +75,9 @@ class User(Resource):
         return args, 201 # TODO - VERIFY IT ACTUALLY WORKED
 
     def delete(self, user_id):
-        pass
+        engine = create_engine('sqlite:///database.db')
+        with engine.connect() as con:
+            con.execute(f"DELETE FROM {USER_TABLE} WHERE user_id = \"{user_id}\";")
+            # TODO - Check it's deleted
+        return '', 204
+    
