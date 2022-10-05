@@ -4,9 +4,15 @@
     <h1>ABC URL Shortener</h1>
     <h2>Logged in as {{ getUserId }}</h2>
     <v-spacer />
-    <SingleURL v-for="url in urls" :key="url.short_url" :url="url"></SingleURL>
+    <SingleURL
+      v-for="url in urls"
+      :key="url.short_url"
+      :url="url"
+      @delete="deleteUrl(url)"
+      @edit="editUrl"
+    ></SingleURL>
     <v-spacer />
-    <NewURL></NewURL>
+    <NewURL class="pa-5" />
   </div>
 </template>
 
@@ -33,6 +39,12 @@ export default defineComponent({
       console.log(resp);
 
       return resp;
+    },
+    async deleteUrl(url: URLResponse) {
+      return;
+    },
+    async editUrl(event: { short_url: string; long_url: string }) {
+      return;
     },
   },
   async created() {
