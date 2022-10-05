@@ -1,7 +1,0 @@
-INSERT INTO user_tbl (user_id, email)
-VALUES (100000, 100000);
-SELECT * FROM user_tbl;
-
-INSERT INTO url_tbl (short_url, long_url, user_id)
-VALUES (2000000, 200000, 200000);
-SELECT * FROM url_tbl;
