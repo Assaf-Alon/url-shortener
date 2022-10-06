@@ -1,18 +1,20 @@
 <template>
-  <div class="d-flex flex-column text-center full-width">
+  <div class="d-flex flex-column text-center full-width full-height">
     <v-spacer />
     <h1>ABC URL Shortener</h1>
     <h2>Logged in as {{ getUserId }}</h2>
     <v-spacer />
-    <SingleURL
-      v-for="url in urls"
-      :key="url.short_url"
-      :url="url"
-      @delete="deleteUrl(url)"
-      @edit="editUrl"
-    ></SingleURL>
+    <div style="height: min-content; overflow: auto">
+      <SingleURL
+        v-for="url in urls"
+        :key="url.short_url"
+        :url="url"
+        @delete="deleteUrl(url)"
+        @edit="editUrl"
+      />
+    </div>
     <v-spacer />
-    <NewURL class="pa-5" />
+    <NewURL class="pa-5" @newURL="createNewURL" />
   </div>
 </template>
 
@@ -40,15 +42,36 @@ export default defineComponent({
 
       return resp;
     },
-    async deleteUrl(url: URLResponse) {
+    async reloadURLS() {
+      this.urls = [...(await this.getURLS())];
+    },
+    async createNewURL({
+      short_url,
+      long_url,
+    }: {
+      short_url: string;
+      long_url: string;
+    }) {
+      let resp = await DL.createUserTranslation(short_url, long_url);
+
+      console.log(resp);
+
+      this.reloadURLS();
+    },
+    async deleteUrl({ short_url, long_url }: URLResponse) {
+      let resp = await DL.deleteUserTranslation(short_url, long_url);
+      console.log(resp);
+
+      this.reloadURLS();
       return;
     },
     async editUrl(event: { short_url: string; long_url: string }) {
+      this.reloadURLS();
       return;
     },
   },
   async created() {
-    this.urls = await this.getURLS();
+    this.reloadURLS();
   },
   components: { SingleURL, NewURL },
 });
@@ -57,5 +80,8 @@ export default defineComponent({
 <style>
 .full-width {
   width: 100%;
+}
+.full-height {
+  height: 100vh;
 }
 </style>
