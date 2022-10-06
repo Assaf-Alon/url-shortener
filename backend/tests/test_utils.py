@@ -10,6 +10,7 @@ def assert_get_translate(short_url, long_url="", user_id="", status_code=200):
         print(f"[VERBOSE] requested {get_url}")
         print(f"[VERBOSE] response code: {res.status_code}")
         print(f"[VERBOSE] response: {res.json()}")
+        print()
     assert res.status_code == status_code
     if status_code == 404:
         return
@@ -26,4 +27,5 @@ def assert_get_user(user_id, user_dict, status_code=200):
         print(f"[VERBOSE] body: {user_dict}")
         print(f"[VERBOSE] response code: {res.status_code}")
         print(f"[VERBOSE] response: {res.json()}")
+        print()
     assert res.status_code == status_code

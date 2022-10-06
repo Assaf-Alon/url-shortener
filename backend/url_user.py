@@ -9,10 +9,10 @@ from sqlalchemy import exc, create_engine
 import app_utils
 
 USER_TABLE  = "user_tbl"
-VERBOSE = False
+VERBOSE     = False
 
 user_args = reqparse.RequestParser()
-user_args.add_argument("user_id",  type=str, help="The username")
+# user_args.add_argument("user_id",  type=str, help="The username")
 user_args.add_argument("password", type=str, help="The passowrd of the user")
 user_args.add_argument("email",    type=str, help="The user's email address")
 
@@ -21,7 +21,7 @@ class User(Resource):
     def get(self, user_id):
         args = user_args.parse_args()
         engine = create_engine('sqlite:///database.db')
-        if "user_id" == "Anonymous":
+        if "user_id" == "anonymous":
             return jsonify({"message": "Anonymous login permitted",
                             "success": True})
         
@@ -33,8 +33,9 @@ class User(Resource):
             if VERBOSE:
                 print(f"[VERBOSE] Ran SQL query: {sql_query}")
                 print(f"[VERBOSE] SQL query output: {output}")
+                print()
             if (len(output) == 0):
-                return {"message": "username not found",
+                return {"message": f"username {user_id} not found",
                         "success": False}, 404
             
             
@@ -44,7 +45,7 @@ class User(Resource):
                         "success": True}, 200
             
             
-            if args['password'] == None:
+            if args['password'] is None:
                 return {"message": "Password not specified",
                                 "success": False}, 403
             
@@ -56,19 +57,23 @@ class User(Resource):
         
     def post(self, user_id):
         engine = create_engine('sqlite:///database.db')
-        args = user_args.parse_args()
+        args = ""
+        try:
+            args = user_args.parse_args()
+        except:
+            exit(137)
         # Input validation
-        if "user_id" not in args.keys() or "password" not in args.keys() or "email" not in args.keys():
-            args['message'] = f"Required argument not specified. Required args: user_id, password, email"
-            return args, 405
+        if "password" not in args.keys() or "email" not in args.keys() or args['email'] is None or args['password'] is None:
+            args['message'] = f"Required argument not specified. Required args: password, email"
+            return args, 400
         
-        if not app_utils.is_user_id_valid(args['user_id']):
-            args['message'] = f"username {args['user_id']} is invalid. Please choose a different one."
+        if not app_utils.is_user_id_valid(user_id):
+            args['message'] = f"username {user_id} is invalid. Please choose a different one."
             return args, 405
 
         with engine.connect() as con:
             try:
-                con.execute(f"INSERT INTO {USER_TABLE} (user_id, password, email) VALUES (\"{args['user_id']}\", \"{args['password']}\", \"{args['email']}\");")
+                con.execute(f"INSERT INTO {USER_TABLE} (user_id, password, email) VALUES (\"{user_id}\", \"{args['password']}\", \"{args['email']}\");")
             except exc.IntegrityError:
                 args['message'] = f"ERROR - user {user_id} already exists"
                 return args, 409

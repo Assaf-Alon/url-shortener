@@ -16,11 +16,11 @@ import app_utils
 
 
 URL_TABLE   = "url_tbl"
-
+VERBOSE = False
 
 # Arguments expected to get from POST requests
 translation_args = reqparse.RequestParser()
-translation_args.add_argument("short_url", type=str, help="The short url is required", required=True)
+# translation_args.add_argument("short_url", type=str, help="The short url is required", required=True)
 translation_args.add_argument("long_url", type=str, help="The long url is required", required=True)
 translation_args.add_argument("user_id", type=str, help="The id of the user")
 
@@ -28,13 +28,22 @@ translation_args.add_argument("user_id", type=str, help="The id of the user")
 # REST API methods for the translate page
 # {BASE_DOMAIN}/translate/<string:short_url>"
 class UrlTranslations(Resource):
-    # @marshal_with(translation_resource_fields) # Serialize it to json format 
     def get(self, short_url):
+        
+        # Input validation
+        if not app_utils.is_short_url_valid(short_url):
+            return jsonify({"message": f"ERROR - {short_url} is an invalid URL. Please choose a different one"}), 403
+        
         engine = create_engine('sqlite:///database.db')
         output = None
         with engine.connect() as con:
-            output = con.execute(f"SELECT * FROM {URL_TABLE} WHERE short_url = \"{short_url}\";")
+            sql_query = f"SELECT * FROM {URL_TABLE} WHERE short_url = \"{short_url}\";"
+            output = con.execute(sql_query)
             listify = [dict(row) for row in output]
+            if VERBOSE:
+                print(f"[VERBOSE] Ran SQL query: {sql_query}")
+                print(f"[VERBOSE] SQL query output: {listify}")
+                print()
             
             if (len(listify) == 0):
                 abort(404)
@@ -46,16 +55,16 @@ class UrlTranslations(Resource):
     
 
     def post(self, short_url):
-        engine = create_engine('sqlite:///database.db')
         args = translation_args.parse_args()
         trans_dict = app_utils.get_translation_dict(args)
         
         # Input validation
-        if not app_utils.is_short_url_valid(trans_dict['short_url']):
-            trans_dict['message'] = f"ERROR - {short_url} is an invalid URL. Please choose a different one"
-            
-        # if not app_utils.is_user_id_valid(trans_dict['user_id']):
-        #     trans_dict['message'] = f"ERROR - {trans_dict['user_id']} is an invalid username."
+        if not app_utils.is_short_url_valid(short_url):
+            trans_dict['message']  = f"ERROR - {short_url} is an invalid URL. Please choose a different one"
+            trans_dict['long_url'] = "FORBIDDEN"
+            return trans_dict, 403
+        
+        engine = create_engine('sqlite:///database.db')
         
         with engine.connect() as con:
             try:

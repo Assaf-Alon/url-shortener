@@ -9,7 +9,7 @@ import test_utils
 
 TEST_TRANS = True
 TEST_USERS = True
-
+VERBOSE    = False
 
 app_process = None
 trans_data = [
@@ -65,7 +65,13 @@ def test_post_url_translations1():
     print("Initializing DB... ", end='')
     
     for dat in trans_data:
-        res = requests.post(test_utils.BASE + "translate/" + dat['short_url'], dat)
+        post_url = f"{test_utils.BASE}translate/{dat['short_url']}"
+        res = requests.post(post_url, dat)
+        if VERBOSE:
+            print(f"[VERBOSE] posted to {post_url}")
+            print(f"[VERBOSE] posted data {dat}")
+            print(f"[VERBOSE] status code {res.status_code}, output: {res.json()}")
+            print()
         assert res.status_code == 201
         
     print(colored("[OK]", "green"))
@@ -99,7 +105,8 @@ def test_delete_url_translations1():
     sleep(0.2)
     test_utils.assert_get_translate(short_url=trans_data[1]['short_url'], status_code=404)
     print(colored("[OK]", "green"))
-    
+
+
 
 def test_post_user1():
     print("Testing POST on users... ", end='')
