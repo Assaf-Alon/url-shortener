@@ -1,0 +1,11 @@
+#builds image
+docker build -f ..\deployment\<folder>\Dockefile . -t <name>:<ver>
+
+#shows images
+docker images
+
+#delete image
+docker rmi <image_name>
+
+#run docker
+docker run -p 8080:8080 <docker_image>:<ver>
